@@ -1,4 +1,5 @@
 import { prisma } from '$lib/server/prisma';
+import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 
 const pageSize = 10;
@@ -20,9 +21,24 @@ export const GET = (async ({ url }) => {
 	return json(result, { status: 200 });
 }) satisfies RequestHandler;
 
-export const POST = (() => {
-	// TODO: Implement logic
-	throw error(418, 'Not yet implemented');
+export const POST = (async ({ request }) => {
+	try {
+		const newTask: { title: string; deathline: string | null } = await request.json();
+		const result = await prisma.task.create({
+			data: {
+				title: newTask.title,
+				deathline: newTask.deathline,
+				userId: null
+			}
+		});
+		return json(result, { status: 201 });
+	} catch (e) {
+		if ((e as SyntaxError).name == 'SyntaxError')
+			return json({ error: 'invalid request body' }, { status: 400 });
+		if (e instanceof PrismaClientValidationError)
+			return json({ error: 'invalid request body' }, { status: 400 });
+		throw error(500, 'internal server error');
+	}
 }) satisfies RequestHandler;
 
 export const PUT = (() => {
