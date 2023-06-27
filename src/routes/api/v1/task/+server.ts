@@ -1,5 +1,8 @@
 import { prisma } from '$lib/server/prisma';
-import { PrismaClientValidationError } from '@prisma/client/runtime/library';
+import {
+	PrismaClientKnownRequestError,
+	PrismaClientValidationError
+} from '@prisma/client/runtime/library';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 
 const pageSize = 10;
@@ -41,9 +44,38 @@ export const POST = (async ({ request }) => {
 	}
 }) satisfies RequestHandler;
 
-export const PUT = (() => {
-	// TODO: Implement logic
-	throw error(418, 'Not yet implemented');
+export const PUT = (async ({ request }) => {
+	try {
+		const update: { id: number; title: string; deathline: string | null; completed: boolean } =
+			await request.json();
+		if (
+			update.id == undefined ||
+			update.title == undefined ||
+			update.deathline === undefined ||
+			update.completed == undefined
+		)
+			throw new SyntaxError('invalid object');
+		const result = await prisma.task.update({
+			where: {
+				id: update.id
+			},
+			data: {
+				title: update.title,
+				deathline: update.deathline,
+				completed: update.completed
+			}
+		});
+		return json(result, { status: 200 });
+	} catch (e) {
+		console.log(e);
+		if ((e as SyntaxError).name == 'SyntaxError')
+			return json({ error: 'invalid request body' }, { status: 400 });
+		if (e instanceof PrismaClientValidationError)
+			return json({ error: 'invalid request body' }, { status: 400 });
+		if ((e as PrismaClientKnownRequestError).code == 'P2025')
+			return json({ error: 'task not found' }, { status: 400 });
+		throw error(500, 'internal server error');
+	}
 }) satisfies RequestHandler;
 
 export const PATCH = (() => {
