@@ -104,7 +104,22 @@ export const PATCH = (async ({ request }) => {
 	}
 }) satisfies RequestHandler;
 
-export const DELETE = (() => {
-	// TODO: Implement logic
-	throw error(418, 'Not yet implemented');
+export const DELETE = (async ({ url }) => {
+	try {
+		const idString = url.searchParams.get('id');
+		if (idString == null) return json({ error: 'id not set' }, { status: 400 });
+		let id = Number(idString);
+		if (isNaN(id) || id < 1) return json({ error: 'invalid id' }, { status: 400 });
+		id = Math.floor(id);
+		const result = await prisma.task.delete({
+			where: {
+				id: id
+			}
+		});
+		return json(result, { status: 200 });
+	} catch (e) {
+		if ((e as PrismaClientKnownRequestError).code == 'P2025')
+			return json({ error: 'task not found' }, { status: 400 });
+		throw error(500, 'internal server error');
+	}
 }) satisfies RequestHandler;
