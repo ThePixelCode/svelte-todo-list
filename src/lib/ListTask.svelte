@@ -7,8 +7,13 @@
 
 {#each tasks as task}
 	<div class="grid grid-cols-5 min-h-[3rem]">
-		<div class="col-span-4">
-			{`Task: ${task.title}, created at: ${new Date(task.createdAt).toLocaleString()}`}
+		<div class="col-span-4 grid grid-flow-row">
+			<div>{`Task: ${task.title}, created at: ${new Date(task.createdAt).toLocaleString()}`}</div>
+			<div>
+				{`Completed: ${task.completed ? 'yes' : 'no'}, Deathline: ${
+					task.deathline ? new Date(task.deathline).toLocaleString() : 'no'
+				}`}
+			</div>
 		</div>
 		<EditTask id={task.id} />
 	</div>

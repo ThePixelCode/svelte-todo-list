@@ -3,7 +3,7 @@ export type Task = {
 	title: string;
 	createdAt: string;
 	updatedAt: string;
-	deathline?: string;
+	deathline: string | null;
 	completed: boolean;
 	userId: null;
 };

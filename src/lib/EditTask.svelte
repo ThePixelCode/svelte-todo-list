@@ -6,7 +6,7 @@
 	export let id: number;
 
 	let title: string;
-	let deathline: string | undefined;
+	let deathline: string | null;
 	let completed: boolean;
 
 	let visible = false;
@@ -23,7 +23,12 @@
 	}
 
 	async function handleForm(_: SubmitEvent) {
-		let newTask = { id, title, deathline: deathline ? deathline + 'Z' : undefined, completed };
+		let newTask = {
+			id,
+			title,
+			deathline: deathline ? (deathline == '' ? null : deathline + 'Z') : null,
+			completed
+		};
 		let response = await fetch('/api/v1/task', {
 			method: 'PUT',
 			headers: {
@@ -45,9 +50,7 @@
 			return;
 		}
 		title = task.title;
-		deathline = task.deathline
-			? new Date(task.deathline).toISOString().replace('Z', '')
-			: undefined;
+		deathline = task.deathline ? new Date(task.deathline).toISOString().replace('Z', '') : null;
 		completed = task.completed;
 	});
 	onDestroy(unsubscribe);
