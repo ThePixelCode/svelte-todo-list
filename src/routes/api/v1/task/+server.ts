@@ -30,7 +30,7 @@ export const POST = (async ({ request }) => {
 		const result = await prisma.task.create({
 			data: {
 				title: newTask.title,
-				deathline: newTask.deathline,
+				deathline: newTask.deathline ? new Date(newTask.deathline) : null,
 				userId: null
 			}
 		});
@@ -61,7 +61,7 @@ export const PUT = (async ({ request }) => {
 			},
 			data: {
 				title: update.title,
-				deathline: update.deathline,
+				deathline: update.deathline ? new Date(update.deathline) : null,
 				completed: update.completed
 			}
 		});
@@ -88,7 +88,7 @@ export const PATCH = (async ({ request }) => {
 			},
 			data: {
 				title: update.title,
-				deathline: update.deathline,
+				deathline: update.deathline ? new Date(update.deathline) : null,
 				completed: update.completed
 			}
 		});
