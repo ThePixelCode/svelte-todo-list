@@ -10,6 +10,6 @@
 		<div class="col-span-4">
 			{`Task: ${task.title}, created at: ${new Date(task.createdAt).toLocaleString()}`}
 		</div>
-		<EditTask {task} />
+		<EditTask id={task.id} />
 	</div>
 {/each}

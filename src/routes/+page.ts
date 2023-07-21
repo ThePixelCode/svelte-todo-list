@@ -1,3 +1,4 @@
+import { taskList } from '$lib/store';
 import type { Task } from '$lib/types';
 import type { PageLoad } from './$types';
 
@@ -9,10 +10,8 @@ export const load = (async ({ fetch }) => {
 		}
 	});
 	const data: Task[] = await request.json();
-	const publicTasks = data.filter((task) => task.userId == null);
-	const privateTasks = data.filter((task) => task.userId != null);
+	taskList.set(data);
 	return {
-		public: publicTasks,
-		private: privateTasks
+		tasks: taskList
 	};
 }) satisfies PageLoad;
