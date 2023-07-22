@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Task } from './types';
 	import EditTask from './EditTask.svelte';
+	import NewTask from './NewTask.svelte';
 
 	export let tasks: Task[];
 </script>
@@ -18,3 +19,4 @@
 		<EditTask id={task.id} />
 	</div>
 {/each}
+<NewTask />
